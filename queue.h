@@ -19,6 +19,8 @@ typedef struct ELE {
      * This array needs to be explicitly allocated and freed
      */
     char *value;
+    unsigned long long hash;
+    int len;
     struct ELE *next;
 } list_ele_t;
 
@@ -106,5 +108,11 @@ list_ele_t *merge_sort(list_ele_t *head, int size);
  * Merge the two list to one
  */
 list_ele_t *merge(list_ele_t *a, list_ele_t *b);
+
+/*
+ * Get the string hash
+ * @char* s string
+ */
+void hash(list_ele_t *e);
 
 #endif /* LAB0_QUEUE_H */

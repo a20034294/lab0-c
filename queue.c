@@ -53,6 +53,7 @@ bool q_insert_head(queue_t *q, char *s)
 {
     list_ele_t *newh;
     char *tmp_s;
+    int len = strlen(s);
 
     if (!q)
         return false;
@@ -61,15 +62,17 @@ bool q_insert_head(queue_t *q, char *s)
     if (!newh)
         return false;
 
-    tmp_s = malloc(strlen(s) + 1);
+    tmp_s = malloc(len + 1);
     if (!tmp_s) {
         free(newh);
         return false;
     }
-    strncpy(tmp_s, s, strlen(s) + 1);
+    strncpy(tmp_s, s, len + 1);
 
     newh->value = tmp_s;
     newh->next = q->head;
+    newh->len = len;
+    hash(newh);
     q->head = newh;
     if (!q->size)
         q->tail = newh;
@@ -88,6 +91,7 @@ bool q_insert_tail(queue_t *q, char *s)
 {
     list_ele_t *newt;
     char *tmp_s;
+    int len = strlen(s);
 
     if (!q)
         return false;
@@ -96,15 +100,17 @@ bool q_insert_tail(queue_t *q, char *s)
     if (!newt)
         return false;
 
-    tmp_s = malloc(strlen(s) + 1);
+    tmp_s = malloc(len + 1);
     if (!tmp_s) {
         free(newt);
         return false;
     }
-    strncpy(tmp_s, s, strlen(s) + 1);
+    strncpy(tmp_s, s, len + 1);
 
     newt->value = tmp_s;
     newt->next = NULL;
+    newt->len = len;
+    hash(newt);
     if (!q->size)
         q->head = q->tail = newt;
     else
@@ -167,15 +173,14 @@ void q_reverse(queue_t *q)
     if (!q || q->size <= 1)
         return;
 
-    p = q->head->next;
-    prev = q->head;
+    p = q->head;
+    prev = NULL;
     while (p) {
         next = p->next;
         p->next = prev;
         prev = p;
         p = next;
     }
-    q->head->next = NULL;
 
     // swap
     p = q->head;
@@ -234,7 +239,7 @@ list_ele_t *merge(list_ele_t *a, list_ele_t *b)
 {
     list_ele_t *newh, *p;
 
-    if (!b || (a && strnatcmp(a->value, b->value) != 1)) {
+    if (!b || (a && a->hash != b->hash && strnatcmp(a->value, b->value) != 1)) {
         p = a;
         a = a->next;
     } else {
@@ -244,7 +249,8 @@ list_ele_t *merge(list_ele_t *a, list_ele_t *b)
     newh = p;
 
     while (a || b) {
-        if (!b || (a && strnatcmp(a->value, b->value) != 1)) {
+        if (!b ||
+            (a && a->hash != b->hash && strnatcmp(a->value, b->value) != 1)) {
             p->next = a;
             p = a;
             a = a->next;
@@ -256,4 +262,18 @@ list_ele_t *merge(list_ele_t *a, list_ele_t *b)
     }
     p->next = NULL;
     return newh;
+}
+
+/*
+ * Get the string hash
+ * @char* s string
+ */
+inline void hash(list_ele_t *e)
+{
+    int i;
+    e->hash = 0;
+    for (i = 0; i < e->len; ++i) {
+        e->hash *= 10000007;
+        e->hash += e->value[i];
+    }
 }
