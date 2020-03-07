@@ -13,7 +13,7 @@
 queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
-    /* TODO: What if malloc returned NULL? */
+
     if (!q) {
         return NULL;
     }
@@ -26,10 +26,9 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* TODO: How about freeing the list elements and the strings? */
-    /* Free queue structure */
     // cppcheck-suppress variableScope
     list_ele_t *p, *tmp;
+
     if (!q)
         return;
 
@@ -54,14 +53,14 @@ bool q_insert_head(queue_t *q, char *s)
 {
     list_ele_t *newh;
     char *tmp_s;
-    /* TODO: What should you do if the q is NULL? */
+
     if (!q)
         return false;
+
     newh = malloc(sizeof(list_ele_t));
     if (!newh)
         return false;
-    /* Don't forget to allocate space for the string and copy it */
-    /* What if either call to malloc returns NULL? */
+
     tmp_s = malloc(strlen(s) + 1);
     if (!tmp_s) {
         free(newh);
@@ -87,20 +86,16 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    /* TODO: You need to write the complete code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
-
     list_ele_t *newt;
     char *tmp_s;
-    /* TODO: What should you do if the q is NULL? */
+
     if (!q)
         return false;
+
     newt = malloc(sizeof(list_ele_t));
     if (!newt)
         return false;
-    /* Don't forget to allocate space for the string and copy it */
-    /* What if either call to malloc returns NULL? */
+
     tmp_s = malloc(strlen(s) + 1);
     if (!tmp_s) {
         free(newt);
@@ -129,9 +124,8 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* TODO: You need to fix up this code. */
-    /* TODO: Remove the above comment when you are about to implement. */
     list_ele_t *head;
+
     if (!q || !q->head)
         return false;
 
@@ -153,11 +147,9 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
     if (!q)
         return 0;
+
     return q->size;
 }
 
@@ -170,9 +162,8 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above cntment when you are about to implement. */
     list_ele_t *p, *prev, *next;
+
     if (!q || q->size <= 1)
         return;
 
@@ -199,9 +190,8 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
     list_ele_t *p;
+
     if (!q || q->size <= 1)
         return;
     q->head = merge_sort(q->head, q->size);
@@ -210,13 +200,15 @@ void q_sort(queue_t *q)
 }
 /*
  * Merge sort
- * @head is the list head to sort
+ * @param head is the list head to sort
+ * @param size is the size of list
  */
 list_ele_t *merge_sort(list_ele_t *head, int size)
 {
     int mid = size >> 1;
     int i;
     list_ele_t *pmid, *next;
+
     if (size == 1)
         return head;
     pmid = head;
@@ -226,6 +218,7 @@ list_ele_t *merge_sort(list_ele_t *head, int size)
             pmid->next = NULL;
         pmid = next;
     }
+
     head = merge_sort(head, mid);
     pmid = merge_sort(pmid, size - mid);
     return merge(head, pmid);
@@ -233,10 +226,14 @@ list_ele_t *merge_sort(list_ele_t *head, int size)
 
 /*
  * Merge the two list to one
+ * @listhead a
+ * @listhead b
+ * @return newhead
  */
 list_ele_t *merge(list_ele_t *a, list_ele_t *b)
 {
     list_ele_t *newh, *p;
+
     if (!b || (a && strnatcmp(a->value, b->value) != 1)) {
         p = a;
         a = a->next;
