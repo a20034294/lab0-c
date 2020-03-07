@@ -27,6 +27,18 @@ void q_free(queue_t *q)
 {
     /* TODO: How about freeing the list elements and the strings? */
     /* Free queue structure */
+    // cppcheck-suppress variableScope
+    list_ele_t *p, *tmp;
+    if (!q)
+        return;
+
+    p = q->head;
+    while (p) {
+        free(p->value);
+        tmp = p;
+        p = p->next;
+        free(tmp);
+    }
     free(q);
 }
 
@@ -40,12 +52,28 @@ void q_free(queue_t *q)
 bool q_insert_head(queue_t *q, char *s)
 {
     list_ele_t *newh;
+    char *tmp_s;
     /* TODO: What should you do if the q is NULL? */
+    if (!q)
+        return false;
     newh = malloc(sizeof(list_ele_t));
+    if (!newh)
+        return false;
     /* Don't forget to allocate space for the string and copy it */
     /* What if either call to malloc returns NULL? */
+    tmp_s = malloc(strlen(s) + 1);
+    if (!tmp_s) {
+        free(newh);
+        return false;
+    }
+    strncpy(tmp_s, s, strlen(s) + 1);
+
+    newh->value = tmp_s;
     newh->next = q->head;
     q->head = newh;
+    if (!q->size)
+        q->tail = newh;
+    q->size++;
     return true;
 }
 
@@ -61,7 +89,33 @@ bool q_insert_tail(queue_t *q, char *s)
     /* TODO: You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
-    return false;
+
+    list_ele_t *newt;
+    char *tmp_s;
+    /* TODO: What should you do if the q is NULL? */
+    if (!q)
+        return false;
+    newt = malloc(sizeof(list_ele_t));
+    if (!newt)
+        return false;
+    /* Don't forget to allocate space for the string and copy it */
+    /* What if either call to malloc returns NULL? */
+    tmp_s = malloc(strlen(s) + 1);
+    if (!tmp_s) {
+        free(newt);
+        return false;
+    }
+    strncpy(tmp_s, s, strlen(s) + 1);
+
+    newt->value = tmp_s;
+    newt->next = NULL;
+    if (!q->size)
+        q->head = q->tail = newt;
+    else
+        q->tail->next = newt;
+    q->tail = newt;
+    q->size++;
+    return true;
 }
 
 /*
