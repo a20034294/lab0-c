@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "harness.h"
+#include "natsort/strnatcmp.h"
 #include "queue.h"
 
 /*
@@ -200,4 +201,62 @@ void q_sort(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
+    list_ele_t *p;
+    if (!q || q->size <= 1)
+        return;
+    q->head = merge_sort(q->head, q->size);
+    for (p = q->head; p; p = p->next)
+        q->tail = p;
+}
+/*
+ * Merge sort
+ * @head is the list head to sort
+ */
+list_ele_t *merge_sort(list_ele_t *head, int size)
+{
+    int mid = size >> 1;
+    int i;
+    list_ele_t *pmid, *next;
+    if (size == 1)
+        return head;
+    pmid = head;
+    for (i = 0; i < mid; i++) {
+        next = pmid->next;
+        if (i == mid - 1)
+            pmid->next = NULL;
+        pmid = next;
+    }
+    head = merge_sort(head, mid);
+    pmid = merge_sort(pmid, size - mid);
+    return merge(head, pmid);
+}
+
+/*
+ * Merge the two list to one
+ */
+list_ele_t *merge(list_ele_t *a, list_ele_t *b)
+{
+    list_ele_t *newh, *p;
+    if (!b || (a && strnatcmp(a->value, b->value) != 1)) {
+        p = a;
+        a = a->next;
+    } else {
+        p = b;
+        b = b->next;
+    }
+    newh = p;
+
+    while (a || b) {
+        if (!b || (a && strnatcmp(a->value, b->value) != 1)) {
+            p->next = a;
+            p = a;
+            a = a->next;
+        } else {
+            p->next = b;
+            p = b;
+            b = b->next;
+        }
+    }
+    p->next = NULL;
+    return newh;
 }

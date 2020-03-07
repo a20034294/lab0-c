@@ -96,4 +96,15 @@ void q_reverse(queue_t *q);
  */
 void q_sort(queue_t *q);
 
+/*
+ * Merge sort
+ * @head is the list head to sort
+ */
+list_ele_t *merge_sort(list_ele_t *head, int size);
+
+/*
+ * Merge the two list to one
+ */
+list_ele_t *merge(list_ele_t *a, list_ele_t *b);
+
 #endif /* LAB0_QUEUE_H */
