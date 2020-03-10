@@ -237,30 +237,20 @@ list_ele_t *merge_sort(list_ele_t *head, int size)
  */
 list_ele_t *merge(list_ele_t *a, list_ele_t *b)
 {
-    list_ele_t *newh, *p;
-
-    if (!b || (a && a->hash != b->hash && strnatcmp(a->value, b->value) != 1)) {
-        p = a;
-        a = a->next;
-    } else {
-        p = b;
-        b = b->next;
-    }
-    newh = p;
+    list_ele_t *newh = NULL, **indirect = &newh;
 
     while (a || b) {
         if (!b ||
             (a && a->hash != b->hash && strnatcmp(a->value, b->value) != 1)) {
-            p->next = a;
-            p = a;
+            *indirect = a;
             a = a->next;
         } else {
-            p->next = b;
-            p = b;
+            *indirect = b;
             b = b->next;
         }
+        indirect = &(*indirect)->next;
     }
-    p->next = NULL;
+    *indirect = NULL;
     return newh;
 }
 
